@@ -5,6 +5,11 @@
    2.  Format the results in a easily accessible object for downstream use. (to be used by other bioinformatics tools)
 
 ## Installation
+Install with pip:
+```sh
+pip install gwas_wrapper
+```
+
 Install using github:
 ```sh
 git clone https://github.com/arvkevi/gwas_wrapper.git

@@ -8,7 +8,6 @@ except ImportError:
 setup(name='gwas_wrapper',
 	  version='0.1',
 	  description='Python wrapper for interacting with the NHGRI-EBI GWAS Catalog',
-	  url='http://github.com/arvkevi/gwas_wrapper',
 	  license='MIT',
 	  keywords=['gwas', 'genomics', 'snp', 'bioinformatics'],
 	  classifiers=[

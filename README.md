@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # gwas_wrapper
 `gwas_wrapper` is a lightweight Python wrapper designed to interact with the [GWAS Catalog](https://www.ebi.ac.uk/gwas/home) API.  As mentioned on their [help page](https://www.ebi.ac.uk/gwas/docs/programmatic-access), the GWAS Catalog API is under active development and no official documentation yet exists.  There are two intended purpose for `gwas_wrapper`:
 
@@ -96,6 +95,3 @@ Welter D, MacArthur J, Morales J, Burdett T, Hall P, Junkins H, Klemm A,
     Flicek P, Manolio T, Hindorff L, and Parkinson H.
     The NHGRI GWAS Catalog, a curated resource of SNP-trait associations.
     Nucleic Acids Research, 2014, Vol. 42 (Database issue): D1001-D1006.
-=======
-# gwas_wrapper
->>>>>>> 23f81523b0d934d686c1c12dccfb5bbe956c1355

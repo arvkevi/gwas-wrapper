@@ -74,7 +74,7 @@ class GWAS(object):
         request = urlopen(query_string)
         results = request.read()
         
-        return json.loads(results)
+        return self.byteify(json.loads(results))
         
     def snp_list(self, raw_results):
         """
@@ -82,8 +82,6 @@ class GWAS(object):
         >>> GWAS().snp_list(raw_results)
         [('rs2497938, 'T'), ('rs6047844', 'T'), ('rs2497938', 'n/a'), ...]
         """
-        raw_results = self.byteify(raw_results)
-        
         snp_list = []
         for snp in raw_results["response"]["docs"]:
             try:
@@ -125,8 +123,6 @@ class GWAS(object):
         {'rs10502861': {'C': {'orPerCopyNum': 1.28, 'riskFrequency': '0.775'}},
          'rs1160312': {'A': {'orPerCopyNum': 1.6, 'riskFrequency': '0.43'}},
         """
-        raw_results = self.byteify(raw_results)
-        
         # default parse_type
         parse_type = kwargs.pop('parse_type', 'all')
         
@@ -162,6 +158,67 @@ class GWAS(object):
                         snp_dict[rsID][ra][attr] = 'n/a'
 
         return snp_dict
+    
+    ##
+    # BATCH SEARCH FUNCTIONS
+    ##
+    
+    def batch_search(self, snps, **kwargs):
+        """
+        Allows the user to search the GWAS catalog for a multiple SNPs.
+        **kwargs can be used similarly to the search function.
+        
+        You can pass a file (one rsID per line):
+        
+        >>> batch_results = GWAS().batch_search('/path/to/snp_batch.txt', pvalfilter='5e-10')
+        
+        or a python list of rsIDs:
+        
+        >>> snps = ['rs7329174', 'rs4975616']
+        >>> batch_results = GWAS().batch_search(snps, pvalfilter='5e-10')
+        
+        batch_search returns dictionary where keys are the rsIDs from input
+        batch and the values are lists of GWAS association objects returned
+        from the search.
+        """
+        # reads a list of snps from file into a list
+        if isinstance(snps, str): 
+            with open(snps) as f: snps= [line.rstrip('\n') for line in f]
+        
+        return {snp: self.search(snp, **kwargs)['response']['docs']
+                for snp in snps}
+
+           
+    def batch_enrichment(self, batch_results):
+        """
+        batch_enrichment returns a dictionary with counts of the
+        association terms from the GWAS Catalog.
+        
+        Must be passed the object returned from batch_search.
+        >>> GWAS().batch_enrichment()
+        """
+        from collections import Counter
+        
+        batch_assoc_count = Counter()
+        snp_assoc_count = {}
+        for rsID,assoc_list in batch_results.items():
+            rsID_count = Counter()
+            try:
+                for assoc in assoc_list:
+                    batch_assoc_count.update(assoc['synonym'])
+                    rsID_count.update(assoc['synonym'])
+                snp_assoc_count[rsID] = rsID_count
+            except KeyError:
+                for assoc in assoc_list:
+                    batch_assoc_count.update(assoc['label_autosuggest'])
+                    rsID_count.update(assoc['label_autosuggest'])
+                snp_assoc_count[rsID] = rsID_count
+        
+        return batch_assoc_count, snp_assoc_count
+    
+    ##
+    # HELPER
+    ##
     
     def byteify(self, inpt):
         """
